@@ -28,9 +28,8 @@ def generate(env, gcc_cross_prefix=None, gcc_strict=True, gcc_stop_on_warning=No
         env['ENV']['PATH'] += os.environ['PATH']
         env['AR']     = gcc_cross_prefix+'-ar'
         env['RANLIB'] = gcc_cross_prefix+'-ranlib'
-        env['CC']     = gcc_cross_prefix+'-gcc ' + gcc_extra_options
-        env['CXX']    = gcc_cross_prefix+'-g++ ' + gcc_extra_options
-        env['LINK']   = gcc_cross_prefix+'-g++ ' + gcc_extra_options
+        env['CC']     = gcc_cross_prefix+'-gcc ' + ' -pie' + ' -fPIE' + gcc_extra_options
+        env['CXX']    = gcc_cross_prefix+'-g++ ' + ' -pie' + ' -fPIE' + gcc_extra_options
+        env['LINK']   = gcc_cross_prefix+'-g++ ' + ' -pie' + ' -fPIE' + gcc_extra_options
         env['STRIP']  = gcc_cross_prefix+'-strip'
 
-    
