@@ -7,29 +7,9 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-/*
- * Class:     com_plutinosoft_platinum_UPnP
- * Method:    _init
- * Signature: ()J
- */
-JNIEXPORT jlong JNICALL Java_com_plutinosoft_platinum_UPnP__1init
-  (JNIEnv *, jclass);
 
-/*
- * Class:     com_plutinosoft_platinum_UPnP
- * Method:    _start
- * Signature: (J)I
- */
-JNIEXPORT jint JNICALL Java_com_plutinosoft_platinum_UPnP__1start
-  (JNIEnv *, jclass, jlong);
+#define javaClassName "com/plutinosoft/platinum/UPnP"
 
-/*
- * Class:     com_plutinosoft_platinum_UPnP
- * Method:    _stop
- * Signature: (J)I
- */
-JNIEXPORT jint JNICALL Java_com_plutinosoft_platinum_UPnP__1stop
-  (JNIEnv *, jclass, jlong);
 
 #ifdef __cplusplus
 }
