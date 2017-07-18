@@ -17,6 +17,7 @@
 
 #include "platinum-jni.h"
 #include "Platinum.h"
+#include "PltMicroMediaController.h"
 
 #include <android/log.h>
 
@@ -53,7 +54,17 @@ jint platinum_UPnP_start(JNIEnv *, jclass, jlong _self)
 {
     NPT_LOG_INFO("start");
     PLT_UPnP* self = (PLT_UPnP*)_self;
-    
+
+    // Create control point
+    PLT_CtrlPointReference ctrlPoint(new PLT_CtrlPoint());
+
+    // Create controller
+    NPT_LOG_INFO("Create controller");
+    PLT_MicroMediaController controller(ctrlPoint);
+
+    // add control point to upnp engine and start it
+    self->AddCtrlPoint(ctrlPoint);
+
     return self->Start();
 }
 
@@ -73,7 +84,7 @@ jint platinum_UPnP_stop(JNIEnv *, jclass, jlong _self)
 jstring platinum_UPnP_getversion(JNIEnv *env, jclass)
 {
     NPT_LOG_INFO("getversion");
-    return env->NewStringUTF("1.0.0");
+    return env->NewStringUTF("1.0.1");
 }
 
 
@@ -108,7 +119,7 @@ static int register_method(JNIEnv *env){
 |    JNI_OnLoad
 +---------------------------------------------------------------------*/
 jint JNI_OnLoad(JavaVM* vm, void* reserved) {
-	NPT_LogManager::GetDefault().Configure("plist:.level=FINE;.handlers=ConsoleHandler;.ConsoleHandler.outputs=2;.ConsoleHandler.colors=false;.ConsoleHandler.filter=59");
+	NPT_LogManager::GetDefault().Configure("plist:.level=FINEST;.handlers=ConsoleHandler;.ConsoleHandler.outputs=2;.ConsoleHandler.colors=false;.ConsoleHandler.filter=59");
     jint result = JNI_ERR;
     JNIEnv *env = NULL;
     if (vm->GetEnv((void **) &env, JNI_VERSION_1_4) != JNI_OK) {
