@@ -38,12 +38,14 @@
 #include "PltMicroMediaController.h"
 #include "PltLeaks.h"
 #include "PltDownloader.h"
+#include "PltLog.h"
+
 
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 
-//NPT_SET_LOCAL_LOGGER("platinum.tests.micromediacontroller")
+NPT_SET_LOCAL_LOGGER("platinum.tests.micromediacontroller")
 
 /*----------------------------------------------------------------------
 |   PLT_MicroMediaController::PLT_MicroMediaController
@@ -52,6 +54,7 @@ PLT_MicroMediaController::PLT_MicroMediaController(PLT_CtrlPointReference& ctrlP
     PLT_SyncMediaBrowser(ctrlPoint),
     PLT_MediaController(ctrlPoint)
 {
+    LOGD("PLT_MicroMediaController");
     // create the stack that will be the directory where the
     // user is currently browsing. 
     // push the root directory onto the directory stack.
@@ -169,6 +172,8 @@ PLT_MicroMediaController::PopDirectoryStackToRoot(void)
 bool 
 PLT_MicroMediaController::OnMSAdded(PLT_DeviceDataReference& device) 
 {     
+
+    NPT_LOG_INFO("OnMSAdded");
     // Issue special action upon discovering MediaConnect server
     PLT_Service* service;
     if (NPT_SUCCEEDED(device->FindServiceByType("urn:microsoft.com:service:X_MS_MediaReceiverRegistrar:*", service))) {
@@ -203,6 +208,8 @@ PLT_MicroMediaController::OnMSAdded(PLT_DeviceDataReference& device)
 bool
 PLT_MicroMediaController::OnMRAdded(PLT_DeviceDataReference& device)
 {
+	LOGD("OnMRAdded");
+
     NPT_String uuid = device->GetUUID();
 
     // test if it's a media renderer
@@ -221,6 +228,7 @@ PLT_MicroMediaController::OnMRAdded(PLT_DeviceDataReference& device)
 void
 PLT_MicroMediaController::OnMRRemoved(PLT_DeviceDataReference& device)
 {
+    LOGD("OnMRRemoved");
     NPT_String uuid = device->GetUUID();
 
     {
@@ -311,6 +319,43 @@ PLT_MicroMediaController::DoBrowse(const char* object_id, /* = NULL */
     }
 
     return res;
+}
+
+void
+PLT_MicroMediaController::GetDms()
+{
+	NPT_AutoLock lock(m_CurMediaServerLock);
+	
+	PopDirectoryStackToRoot();
+
+	PLT_StringMap			 namesTable;
+
+	NPT_Lock<PLT_DeviceMap>  mMSs = GetMediaServersMap();
+
+	const NPT_List<PLT_DeviceMapEntry*>& device_map_entries = mMSs.GetEntries();
+		NPT_List<PLT_DeviceMapEntry*>::Iterator device_map_entry = device_map_entries.GetFirstItem();
+		while (device_map_entry) {
+			PLT_DeviceDataReference device = (*device_map_entry)->GetValue();
+			NPT_String				name   = device->GetFriendlyName();
+			namesTable.Put((*device_map_entry)->GetKey(), name);
+	
+			++device_map_entry;
+		}
+
+    NPT_List<PLT_StringMapEntry*> string_map_entries = namesTable.GetEntries();
+    if (string_map_entries.GetItemCount() == 0) {
+		NPT_SET_LOCAL_LOGGER("None available\n")
+    } else {
+        // display the list of entries
+        NPT_List<PLT_StringMapEntry*>::Iterator string_map_entry = string_map_entries.GetFirstItem();
+        int count = 0;
+        while (string_map_entry) {
+            //printf("%d)\t%s (%s)\n", ++count, (const char*)(*entry)->GetValue(), (const char*)(*entry)->GetKey());
+            LOGD("%d)\t%s (%s)\n", ++count, (const char*)(*string_map_entry)->GetValue(), (const char*)(*string_map_entry)->GetKey());
+			++string_map_entry;
+        }
+    }
+
 }
 
 /*----------------------------------------------------------------------

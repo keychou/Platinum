@@ -36,6 +36,8 @@
 |   includes
 +---------------------------------------------------------------------*/
 #include "PltSyncMediaBrowser.h"
+#include "PltLog.h"
+
 
 NPT_SET_LOCAL_LOGGER("platinum.media.server.syncbrowser")
 
@@ -77,6 +79,7 @@ PLT_SyncMediaBrowser::WaitForResponse(NPT_SharedVariable& shared_var)
 NPT_Result
 PLT_SyncMediaBrowser::OnDeviceAdded(PLT_DeviceDataReference& device)
 {
+	NPT_LOG_INFO("klein---OnDeviceAdded\n");
     NPT_String uuid = device->GetUUID();
 
     // test if it's a media server
@@ -95,6 +98,7 @@ PLT_SyncMediaBrowser::OnDeviceAdded(PLT_DeviceDataReference& device)
 NPT_Result
 PLT_SyncMediaBrowser::OnDeviceRemoved(PLT_DeviceDataReference& device)
 {
+	NPT_LOG_INFO("klein---OnDeviceRemoved\n");
     NPT_String uuid = device->GetUUID();
 
     // Remove from our list of servers first if found

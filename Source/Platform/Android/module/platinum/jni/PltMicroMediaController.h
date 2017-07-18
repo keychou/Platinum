@@ -97,7 +97,7 @@ public:
                                const NPT_HttpRequestContext& context,
                                NPT_HttpResponse*             response);
     
-private:
+public:
     const char* ChooseIDFromTable(PLT_StringMap& table);
     void        PopDirectoryStackToRoot(void);
     NPT_Result  DoBrowse(const char* object_id = NULL, bool metdata = false);
@@ -126,6 +126,8 @@ private:
     void    HandleCmd_stop();
     void    HandleCmd_mute();
     void    HandleCmd_unmute();
+
+	void    GetDms();
 
 private:
     /* Tables of known devices on the network.  These are updated via the

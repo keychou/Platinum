@@ -33,6 +33,11 @@ __attribute__((constructor)) static void onDlOpen(void)
 {
 }
 
+
+PLT_MicroMediaController* controller;
+
+
+
 /*
  * Class:     com_plutinosoft_platinum_UPnP
  * Method:    _init
@@ -60,7 +65,7 @@ jint platinum_UPnP_start(JNIEnv *, jclass, jlong _self)
 
     // Create controller
     NPT_LOG_INFO("Create controller");
-    PLT_MicroMediaController controller(ctrlPoint);
+    controller =  new PLT_MicroMediaController(ctrlPoint);
 
     // add control point to upnp engine and start it
     self->AddCtrlPoint(ctrlPoint);
@@ -87,6 +92,19 @@ jstring platinum_UPnP_getversion(JNIEnv *env, jclass)
     return env->NewStringUTF("1.0.1");
 }
 
+jstring platinum_UPnP_setms(JNIEnv *env, jclass)
+{
+    NPT_LOG_INFO("setms");
+	controller->HandleCmd_setms();
+    return env->NewStringUTF("no result");
+}
+
+jstring platinum_UPnP_getms(JNIEnv *env, jclass)
+{
+    NPT_LOG_INFO("getms");
+	controller->GetDms();
+    return env->NewStringUTF("no result");
+}
 
 
 static JNINativeMethod method_table[] = {
@@ -94,6 +112,8 @@ static JNINativeMethod method_table[] = {
 	{"_init",  "()J", (void *)platinum_UPnP_init},
 	{"_start",  "(J)I",  (void *)platinum_UPnP_start},
 	{"_stop",  "(J)I",  (void *)platinum_UPnP_stop},
+	{"_setms",  "()Ljava/lang/String;",  (void *)platinum_UPnP_setms},
+	{"_getms",  "()Ljava/lang/String;",  (void *)platinum_UPnP_getms},
 };
 
 
