@@ -18,6 +18,8 @@
 #include "platinum-jni.h"
 #include "Platinum.h"
 #include "PltMicroMediaController.h"
+#include "PltLog.h"
+
 
 #include <android/log.h>
 
@@ -36,6 +38,16 @@ __attribute__((constructor)) static void onDlOpen(void)
 
 PLT_MicroMediaController* controller;
 
+jint addDms_fromNative() {
+ 
+    NPT_LOG_INFO("addDms_fromNative");
+
+    jstring devName = envGlobal->NewStringUTF("testmediaserver1");
+
+    envGlobal->CallVoidMethod(*objGlobal,gNativeUpnpClassInfo.onDmsAdded,devName);
+
+	return 1;
+}
 
 
 /*
@@ -86,9 +98,14 @@ jint platinum_UPnP_stop(JNIEnv *, jclass, jlong _self)
     return self->Stop();
 }
 
-jstring platinum_UPnP_getversion(JNIEnv *env, jclass)
+jstring platinum_UPnP_getversion(JNIEnv *env, jobject obj)
 {
     NPT_LOG_INFO("getversion");
+
+	objGlobal = &obj;
+
+	addDms_fromNative();
+
     return env->NewStringUTF("1.0.1");
 }
 
@@ -116,6 +133,41 @@ static JNINativeMethod method_table[] = {
 	{"_getms",  "()Ljava/lang/String;",  (void *)platinum_UPnP_getms},
 };
 
+int register_NativeUpnp()
+{
+    NPT_LOG_INFO("register_NativeUpnp");
+    jclass clazz;
+    FIND_CLASS(clazz, javaClassName);
+
+	if(clazz==0){
+        NPT_LOG_INFO("find class error");
+        return -1;
+    }
+    NPT_LOG_INFO("find class successfully ");
+
+    GET_METHOD_ID(gNativeUpnpClassInfo.onDmsAdded,
+            clazz,
+            "onDmsAdded", "(Ljava/lang/String;)V");
+
+   if(gNativeUpnpClassInfo.onDmsAdded==0){
+        NPT_LOG_INFO("find onDmsAdded error");
+        return -1;
+    }
+    NPT_LOG_INFO("find onDmsAdded successfully");
+	
+    /*GET_METHOD_ID(gNativeUpnpClassInfo.onDmsRemoved,
+            clazz,
+            "onDmsRemoved", "(Ljava/lang/String;)V");
+    GET_METHOD_ID(gNativeUpnpClassInfo.onDmrAdded,
+            clazz,
+            "onDmrAdded", "(Ljava/lang/String;)V");
+    GET_METHOD_ID(gNativeUpnpClassInfo.onDmrRemoved,
+            clazz,
+            "onDmrRemoved", "(Ljava/lang/String;)V");*/
+    return 0;
+}
+
+
 
 static int register_method(JNIEnv *env){
 	jclass clazz = env->FindClass(javaClassName);
@@ -141,13 +193,20 @@ static int register_method(JNIEnv *env){
 jint JNI_OnLoad(JavaVM* vm, void* reserved) {
 	NPT_LogManager::GetDefault().Configure("plist:.level=FINEST;.handlers=ConsoleHandler;.ConsoleHandler.outputs=2;.ConsoleHandler.colors=false;.ConsoleHandler.filter=59");
     jint result = JNI_ERR;
+	vmGlobal = vm;
     JNIEnv *env = NULL;
     if (vm->GetEnv((void **) &env, JNI_VERSION_1_4) != JNI_OK) {
         return -1;
     }
+
+	envGlobal = env;
+	
     if (!register_method(env)) {
         return -1;
     }
+
+	register_NativeUpnp();
+	
     result = JNI_VERSION_1_4;
     return result;
 }
