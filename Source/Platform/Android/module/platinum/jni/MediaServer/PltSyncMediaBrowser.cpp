@@ -79,7 +79,7 @@ PLT_SyncMediaBrowser::WaitForResponse(NPT_SharedVariable& shared_var)
 NPT_Result
 PLT_SyncMediaBrowser::OnDeviceAdded(PLT_DeviceDataReference& device)
 {
-	NPT_LOG_INFO("klein---OnDeviceAdded\n");
+	NPT_LOG_INFO("PLT_SyncMediaBrowser-OnDeviceAdded");
     NPT_String uuid = device->GetUUID();
 
     // test if it's a media server
@@ -88,7 +88,8 @@ PLT_SyncMediaBrowser::OnDeviceAdded(PLT_DeviceDataReference& device)
         NPT_AutoLock lock(m_MediaServers);
         m_MediaServers.Put(uuid, device);
     }
-    
+
+	NPT_LOG_INFO("PLT_SyncMediaBrowser-OnDeviceAdded--done");
     return PLT_MediaBrowser::OnDeviceAdded(device);
 }
     
@@ -98,7 +99,7 @@ PLT_SyncMediaBrowser::OnDeviceAdded(PLT_DeviceDataReference& device)
 NPT_Result
 PLT_SyncMediaBrowser::OnDeviceRemoved(PLT_DeviceDataReference& device)
 {
-	NPT_LOG_INFO("klein---OnDeviceRemoved\n");
+	NPT_LOG_INFO("OnDeviceRemoved\n");
     NPT_String uuid = device->GetUUID();
 
     // Remove from our list of servers first if found

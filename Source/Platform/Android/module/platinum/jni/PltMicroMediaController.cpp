@@ -208,7 +208,7 @@ PLT_MicroMediaController::OnMSAdded(PLT_DeviceDataReference& device)
 bool
 PLT_MicroMediaController::OnMRAdded(PLT_DeviceDataReference& device)
 {
-	LOGD("OnMRAdded");
+	NPT_LOG_INFO("OnMRAdded");
 
     NPT_String uuid = device->GetUUID();
 
@@ -228,7 +228,7 @@ PLT_MicroMediaController::OnMRAdded(PLT_DeviceDataReference& device)
 void
 PLT_MicroMediaController::OnMRRemoved(PLT_DeviceDataReference& device)
 {
-    LOGD("OnMRRemoved");
+    NPT_LOG_INFO("OnMRRemoved");
     NPT_String uuid = device->GetUUID();
 
     {

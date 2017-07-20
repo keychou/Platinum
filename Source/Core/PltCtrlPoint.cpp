@@ -56,6 +56,7 @@ public:
         m_Device(device) {}
 
     NPT_Result operator()(PLT_CtrlPointListener*& listener) const {
+		NPT_LOG_INFO("--PLT_CtrlPointListenerOnDeviceAddedIterator-operator()----");
         return listener->OnDeviceAdded(m_Device);
     }
 
@@ -1102,6 +1103,7 @@ PLT_CtrlPoint::AddDevice(PLT_DeviceDataReference& data)
 NPT_Result
 PLT_CtrlPoint::NotifyDeviceReady(PLT_DeviceDataReference& data)
 {
+	NPT_LOG_INFO("NotifyDeviceReady");
     m_ListenerList.Apply(PLT_CtrlPointListenerOnDeviceAddedIterator(data));
 
     /* recursively add embedded devices */

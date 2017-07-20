@@ -68,14 +68,17 @@ PLT_MediaController::~PLT_MediaController()
 NPT_Result
 PLT_MediaController::OnDeviceAdded(PLT_DeviceDataReference& device)
 {
+    NPT_LOG_FINE("PLT_MediaController---OnDeviceAdded");
     // verify the device implements the function we need
     PLT_Service* serviceAVT = NULL;
     PLT_Service* serviceCMR;
 	PLT_Service* serviceRC;
     NPT_String   type;
     
-    if (!device->GetType().StartsWith("urn:schemas-upnp-org:device:MediaRenderer"))
-        return NPT_FAILURE;
+    if (!device->GetType().StartsWith("urn:schemas-upnp-org:device:MediaRenderer")){
+		NPT_LOG_FINE("this is not a MediaRenderer");
+		return NPT_FAILURE;
+	}
 
     // optional service
     type = "urn:schemas-upnp-org:service:AVTransport:*";
@@ -117,7 +120,7 @@ PLT_MediaController::OnDeviceAdded(PLT_DeviceDataReference& device)
             return NPT_FAILURE;
         }
 
-        NPT_LOG_FINE_1("Device Found: %s", (const char*)*device);
+        NPT_LOG_FINE_1("PLT_MediaController --- Device Found: %s", (const char*)*device);
 
         m_MediaRenderers.Add(device);
     }

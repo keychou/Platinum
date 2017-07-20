@@ -66,14 +66,17 @@ PLT_MediaBrowser::~PLT_MediaBrowser()
 NPT_Result
 PLT_MediaBrowser::OnDeviceAdded(PLT_DeviceDataReference& device)
 {
+    NPT_LOG_FINE("PLT_MediaBrowser--OnDeviceAdded");
     // verify the device implements the function we need
     PLT_Service* serviceCDS;
     PLT_Service* serviceCMR;
     NPT_String   type;
 
-    if (!device->GetType().StartsWith("urn:schemas-upnp-org:device:MediaServer"))
-        return NPT_FAILURE;
-    
+    if (!device->GetType().StartsWith("urn:schemas-upnp-org:device:MediaServer")){
+		NPT_LOG_FINE("this is not a MediaServer");
+	    return NPT_FAILURE;
+	}
+
     type = "urn:schemas-upnp-org:service:ContentDirectory:*";
     if (NPT_FAILED(device->FindServiceByType(type, serviceCDS))) {
         NPT_LOG_WARNING_2("Service %s not found in device \"%s\"", 
@@ -95,7 +98,7 @@ PLT_MediaBrowser::OnDeviceAdded(PLT_DeviceDataReference& device)
         // in case it's a newer upnp implementation, force to 1
         serviceCMR->ForceVersion(1);
     }
-    
+
     {
         NPT_AutoLock lock(m_MediaServers);
 
@@ -108,10 +111,11 @@ PLT_MediaBrowser::OnDeviceAdded(PLT_DeviceDataReference& device)
             return NPT_FAILURE;
         }
 
-        NPT_LOG_FINE_1("Device Found: %s", (const char*)*device);
+        NPT_LOG_FINE_1("PLT_MediaBrowser --- Device Found: %s", (const char*)*device);
 
         m_MediaServers.Add(device);
     }
+
 
     if (m_Delegate && m_Delegate->OnMSAdded(device)) {
         m_CtrlPoint->Subscribe(serviceCDS);
