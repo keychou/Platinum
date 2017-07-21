@@ -128,6 +128,7 @@ public:
     void    HandleCmd_unmute();
 
 	void    GetDms();
+	int setActiveDms(NPT_String chosenUUID);
 
 private:
     /* Tables of known devices on the network.  These are updated via the

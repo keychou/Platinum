@@ -176,7 +176,7 @@ PLT_MicroMediaController::OnMSAdded(PLT_DeviceDataReference& device)
 
     NPT_LOG_INFO("OnMSAdded");
 
-	callBack_AddDms();
+	callBack_AddDms((device->GetUUID()).GetChars(), (device->GetFriendlyName()).GetChars(), (device->GetType()).GetChars());
 
     // Issue special action upon discovering MediaConnect server
     PLT_Service* service;
@@ -213,6 +213,7 @@ bool
 PLT_MicroMediaController::OnMRAdded(PLT_DeviceDataReference& device)
 {
 	NPT_LOG_INFO("OnMRAdded");
+	callBack_AddDmr((device->GetUUID()).GetChars(), (device->GetFriendlyName()).GetChars(), (device->GetType()).GetChars());
 
     NPT_String uuid = device->GetUUID();
 
@@ -325,6 +326,13 @@ PLT_MicroMediaController::DoBrowse(const char* object_id, /* = NULL */
     return res;
 }
 
+/*----------------------------------------------------------------------
+|   PLT_MicroMediaController::GetDms
+|   orgnization: www.quectel.com
+|   author: klein.zhou@quectel.com
+|   date: 20170721
++---------------------------------------------------------------------*/
+
 void
 PLT_MicroMediaController::GetDms()
 {
@@ -361,6 +369,29 @@ PLT_MicroMediaController::GetDms()
     }
 
 }
+
+
+/*----------------------------------------------------------------------
+|   PLT_MicroMediaController::setActiveDms 
+|   orgnization: www.quectel.com
+|   author: klein.zhou@quectel.com
+|   date: 20170721
++---------------------------------------------------------------------*/
+int PLT_MicroMediaController::setActiveDms(NPT_String chosenUUID)
+{
+	/*NPT_AutoLock lock(m_CurMediaServerLock);
+
+    PopDirectoryStackToRoot();
+	const NPT_Lock<PLT_DeviceMap>& deviceMediaServerMap = GetMediaServersMap();
+   
+	if (chosenUUID.GetLength()) {
+	    deviceMediaServerMap.Get(chosenUUID, &m_CurMediaServer);
+		return 0;
+	}*/
+
+	return -1;
+}
+
 
 /*----------------------------------------------------------------------
 |   PLT_MicroMediaController::HandleCmd_getms
