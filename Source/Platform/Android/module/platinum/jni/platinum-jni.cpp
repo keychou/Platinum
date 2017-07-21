@@ -20,8 +20,9 @@
 #include "PltMicroMediaController.h"
 #include "PltLog.h"
 
-
 #include <android/log.h>
+
+#define VERSION_OF_PLATITUM_SDK "1.0.2"
 
 /*----------------------------------------------------------------------
 |   logging
@@ -125,7 +126,7 @@ jint platinum_UPnP_stop(JNIEnv *, jclass, jlong _self)
     return self->Stop();
 }
 
-jstring platinum_UPnP_getversion(JNIEnv *env, jobject obj)
+jstring platinum_UPnP_checkVersion(JNIEnv *env, jobject obj)
 {
     NPT_LOG_INFO("getversion");
 
@@ -133,7 +134,7 @@ jstring platinum_UPnP_getversion(JNIEnv *env, jobject obj)
 
     objGlobal = env->NewGlobalRef(obj);
 
-    return env->NewStringUTF("1.0.1");
+    return env->NewStringUTF(VERSION_OF_PLATITUM_SDK);
 }
 
 jstring platinum_UPnP_setms(JNIEnv *env, jclass)
@@ -152,7 +153,7 @@ jstring platinum_UPnP_getms(JNIEnv *env, jclass)
 
 
 static JNINativeMethod method_table[] = {
-        {"_getversion",  "()Ljava/lang/String;", (void *)platinum_UPnP_getversion},
+        {"_checkVersion",  "()Ljava/lang/String;", (void *)platinum_UPnP_checkVersion},
         {"_init",  "()J", (void *)platinum_UPnP_init},
         {"_start",  "(J)I",  (void *)platinum_UPnP_start},
         {"_stop",  "(J)I",  (void *)platinum_UPnP_stop},
