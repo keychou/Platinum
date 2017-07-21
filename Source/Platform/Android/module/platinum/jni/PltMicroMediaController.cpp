@@ -39,6 +39,7 @@
 #include "PltLeaks.h"
 #include "PltDownloader.h"
 #include "PltLog.h"
+#include "platinum-jni.h"
 
 
 #include <stdio.h>
@@ -174,6 +175,9 @@ PLT_MicroMediaController::OnMSAdded(PLT_DeviceDataReference& device)
 {     
 
     NPT_LOG_INFO("OnMSAdded");
+
+	callBack_AddDms();
+
     // Issue special action upon discovering MediaConnect server
     PLT_Service* service;
     if (NPT_SUCCEEDED(device->FindServiceByType("urn:microsoft.com:service:X_MS_MediaReceiverRegistrar:*", service))) {

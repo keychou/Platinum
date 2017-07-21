@@ -35,18 +35,45 @@ __attribute__((constructor)) static void onDlOpen(void)
 {
 }
 
+JavaVM* vmGlobal = NULL;
+jobject objGlobal;
+
+#define CHECK_IF_VALIABLE(value)  if(value==0){\
+                               NPT_LOG_INFO("find value error");\
+                               return -1;\
+                            }\
+                            NPT_LOG_INFO("find value successfully");\
+
+
 
 PLT_MicroMediaController* controller;
 
-jint addDms_fromNative() {
- 
-    NPT_LOG_INFO("addDms_fromNative");
+int callBack_AddDms() {
 
-    jstring devName = envGlobal->NewStringUTF("testmediaserver1");
+    NPT_LOG_INFO("callBack_AddDms");
 
-    envGlobal->CallVoidMethod(*objGlobal,gNativeUpnpClassInfo.onDmsAdded,devName);
+    int status;
+    JNIEnv *env;
+    bool isAttached = false;
+    status = vmGlobal->GetEnv((void**) &env, JNI_VERSION_1_4);
+    if (status < 0) {
+        status = vmGlobal->AttachCurrentThread(&env, NULL);
+        if (status < 0){
 
-	return 1;
+        }else{
+            isAttached = true;
+        }
+    }
+
+    jstring devName = env->NewStringUTF("testmediaserver1");
+
+    env->CallVoidMethod(objGlobal,gNativeUpnpClassInfo.onDmsAdded,devName);
+
+    if (isAttached){
+        vmGlobal->DetachCurrentThread();
+    }
+
+    return 1;
 }
 
 
@@ -94,7 +121,7 @@ jint platinum_UPnP_stop(JNIEnv *, jclass, jlong _self)
 {
     NPT_LOG_INFO("stop");
     PLT_UPnP* self = (PLT_UPnP*)_self;
-    
+
     return self->Stop();
 }
 
@@ -102,9 +129,9 @@ jstring platinum_UPnP_getversion(JNIEnv *env, jobject obj)
 {
     NPT_LOG_INFO("getversion");
 
-	objGlobal = &obj;
+    register_NativeUpnp(env);
 
-	addDms_fromNative();
+    objGlobal = env->NewGlobalRef(obj);
 
     return env->NewStringUTF("1.0.1");
 }
@@ -112,49 +139,38 @@ jstring platinum_UPnP_getversion(JNIEnv *env, jobject obj)
 jstring platinum_UPnP_setms(JNIEnv *env, jclass)
 {
     NPT_LOG_INFO("setms");
-	controller->HandleCmd_setms();
+    controller->HandleCmd_setms();
     return env->NewStringUTF("no result");
 }
 
 jstring platinum_UPnP_getms(JNIEnv *env, jclass)
 {
     NPT_LOG_INFO("getms");
-	controller->GetDms();
+    controller->GetDms();
     return env->NewStringUTF("no result");
 }
 
 
 static JNINativeMethod method_table[] = {
-	{"_getversion",  "()Ljava/lang/String;", (void *)platinum_UPnP_getversion},
-	{"_init",  "()J", (void *)platinum_UPnP_init},
-	{"_start",  "(J)I",  (void *)platinum_UPnP_start},
-	{"_stop",  "(J)I",  (void *)platinum_UPnP_stop},
-	{"_setms",  "()Ljava/lang/String;",  (void *)platinum_UPnP_setms},
-	{"_getms",  "()Ljava/lang/String;",  (void *)platinum_UPnP_getms},
+        {"_getversion",  "()Ljava/lang/String;", (void *)platinum_UPnP_getversion},
+        {"_init",  "()J", (void *)platinum_UPnP_init},
+        {"_start",  "(J)I",  (void *)platinum_UPnP_start},
+        {"_stop",  "(J)I",  (void *)platinum_UPnP_stop},
+        {"_setms",  "()Ljava/lang/String;",  (void *)platinum_UPnP_setms},
+        {"_getms",  "()Ljava/lang/String;",  (void *)platinum_UPnP_getms},
 };
 
-int register_NativeUpnp()
+int register_NativeUpnp(JNIEnv *env)
 {
     NPT_LOG_INFO("register_NativeUpnp");
     jclass clazz;
     FIND_CLASS(clazz, javaClassName);
-
-	if(clazz==0){
-        NPT_LOG_INFO("find class error");
-        return -1;
-    }
-    NPT_LOG_INFO("find class successfully ");
-
+    CHECK_IF_VALIABLE(clazz);
     GET_METHOD_ID(gNativeUpnpClassInfo.onDmsAdded,
-            clazz,
-            "onDmsAdded", "(Ljava/lang/String;)V");
+                  clazz,
+                  "onDmsAdded", "(Ljava/lang/String;)V");
+    CHECK_IF_VALIABLE(gNativeUpnpClassInfo.onDmsAdded);
 
-   if(gNativeUpnpClassInfo.onDmsAdded==0){
-        NPT_LOG_INFO("find onDmsAdded error");
-        return -1;
-    }
-    NPT_LOG_INFO("find onDmsAdded successfully");
-	
     /*GET_METHOD_ID(gNativeUpnpClassInfo.onDmsRemoved,
             clazz,
             "onDmsRemoved", "(Ljava/lang/String;)V");
@@ -170,20 +186,20 @@ int register_NativeUpnp()
 
 
 static int register_method(JNIEnv *env){
-	jclass clazz = env->FindClass(javaClassName);
+    jclass clazz = env->FindClass(javaClassName);
 
     if (clazz == NULL) {
-		NPT_LOG_INFO("register methods, unable to find class\n");
-		return JNI_FALSE;
-	}
-
-	if (env->RegisterNatives(clazz, method_table, sizeof(method_table) / sizeof(method_table[0])) < 0)
-    {
-		NPT_LOG_INFO("register methods, failed for\n");
-		return JNI_FALSE;
+        NPT_LOG_INFO("register methods, unable to find class\n");
+        return JNI_FALSE;
     }
 
-	return JNI_TRUE;
+    if (env->RegisterNatives(clazz, method_table, sizeof(method_table) / sizeof(method_table[0])) < 0)
+    {
+        NPT_LOG_INFO("register methods, failed for\n");
+        return JNI_FALSE;
+    }
+
+    return JNI_TRUE;
 }
 
 
@@ -191,24 +207,23 @@ static int register_method(JNIEnv *env){
 |    JNI_OnLoad
 +---------------------------------------------------------------------*/
 jint JNI_OnLoad(JavaVM* vm, void* reserved) {
-	NPT_LogManager::GetDefault().Configure("plist:.level=FINEST;.handlers=ConsoleHandler;.ConsoleHandler.outputs=2;.ConsoleHandler.colors=false;.ConsoleHandler.filter=59");
+    NPT_LogManager::GetDefault().Configure("plist:.level=FINEST;.handlers=ConsoleHandler;.ConsoleHandler.outputs=2;.ConsoleHandler.colors=false;.ConsoleHandler.filter=59");
     jint result = JNI_ERR;
-	vmGlobal = vm;
+
+    vmGlobal = vm;
+
     JNIEnv *env = NULL;
     if (vm->GetEnv((void **) &env, JNI_VERSION_1_4) != JNI_OK) {
         return -1;
     }
 
-	envGlobal = env;
-	
     if (!register_method(env)) {
         return -1;
     }
 
-	register_NativeUpnp();
-	
     result = JNI_VERSION_1_4;
     return result;
 }
+
 
 

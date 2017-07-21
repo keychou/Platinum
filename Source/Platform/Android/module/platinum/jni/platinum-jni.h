@@ -10,10 +10,6 @@ extern "C" {
 
 #define javaClassName "com/plutinosoft/platinum/UPnP"
 
-JNIEnv* envGlobal = NULL;
-JavaVM* vmGlobal = NULL;
-jobject* objGlobal = NULL;
-
 static struct {
     jmethodID onDmsAdded;
     jmethodID onDmsRemoved;
@@ -22,12 +18,15 @@ static struct {
 } gNativeUpnpClassInfo;
 
 #define FIND_CLASS(var, className) \
-        var = envGlobal->FindClass(className);
+        var = env->FindClass(className);
 
 #define GET_METHOD_ID(var, clazz, methodName, fieldDescriptor) \
-        var = envGlobal->GetMethodID(clazz, methodName, fieldDescriptor);
+        var = env->GetMethodID(clazz, methodName, fieldDescriptor);
 
-jint addDms_fromNative();
+
+int register_NativeUpnp(JNIEnv *env);
+int callBack_AddDms();
+
 
 
 #ifdef __cplusplus
