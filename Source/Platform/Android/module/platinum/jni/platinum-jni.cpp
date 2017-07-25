@@ -233,19 +233,46 @@ jstring platinum_UPnP_checkVersion(JNIEnv *env, jobject obj)
     return env->NewStringUTF(VERSION_OF_PLATITUM_SDK);
 }
 
-jint platinum_UPnP_setActiveDms(JNIEnv *env, jclass, jstring device)
+jint platinum_UPnP_setActiveDms(JNIEnv *env, jclass, jstring uuid)
 {
     NPT_LOG_INFO("setActiveDms");
-    //controller->HandleCmd_setms();
+	const char* luuid = env->GetStringUTFChars(uuid, 0);
+    
+    //char nvid_value[MAX_NVID_BUFF];
+    //strcpy(nvid_value, s);
+	
+    controller->setActiveDms(luuid);
     return 0;
 }
 
-jint platinum_UPnP_setActiveDmr(JNIEnv *env, jclass, jstring device)
+jint platinum_UPnP_setActiveDmr(JNIEnv *env, jclass, jstring uuid)
 {
     NPT_LOG_INFO("setActiveDmr");
-    //controller->GetDms();
+	const char* luuid = env->GetStringUTFChars(uuid, 0);
+	
+    controller->setActiveDmr(luuid);
     return 0;
 }
+
+jstring platinum_UPnP_getActiveDms(JNIEnv *env, jobject obj)
+{
+    NPT_LOG_INFO("platinum_UPnP_getActiveDms");
+
+	char* activeDms = controller->getActiveDms();
+
+    return env->NewStringUTF(activeDms);
+}
+
+jstring platinum_UPnP_getActiveDmr(JNIEnv *env, jobject obj)
+{
+    NPT_LOG_INFO("platinum_UPnP_getActiveDmr");
+
+	char* activeDmr = controller->getActiveDmr();
+
+    return env->NewStringUTF(activeDmr);
+}
+
+
 
 
 static JNINativeMethod method_table[] = {
@@ -255,6 +282,8 @@ static JNINativeMethod method_table[] = {
         {"_stop",  "(J)I",  (void *)platinum_UPnP_stop},
         {"_setActiveDms",  "(Ljava/lang/String;)I",  (void *)platinum_UPnP_setActiveDms},
         {"_setActiveDmr",  "(Ljava/lang/String;)I",  (void *)platinum_UPnP_setActiveDmr},
+        {"_getActiveDms",  "()Ljava/lang/String;",  (void *)platinum_UPnP_getActiveDms},
+        {"_getActiveDmr",  "()Ljava/lang/String;",  (void *)platinum_UPnP_getActiveDmr},
 };
 
 int register_NativeUpnp(JNIEnv *env)

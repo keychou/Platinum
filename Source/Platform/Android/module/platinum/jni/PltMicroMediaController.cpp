@@ -381,18 +381,77 @@ PLT_MicroMediaController::GetDms()
 +---------------------------------------------------------------------*/
 int PLT_MicroMediaController::setActiveDms(NPT_String chosenUUID)
 {
-	/*NPT_AutoLock lock(m_CurMediaServerLock);
+	NPT_AutoLock lock(m_CurMediaServerLock);
 
     PopDirectoryStackToRoot();
 	const NPT_Lock<PLT_DeviceMap>& deviceMediaServerMap = GetMediaServersMap();
+
+	PLT_DeviceDataReference *tmpMediaServer;
+
    
 	if (chosenUUID.GetLength()) {
-	    deviceMediaServerMap.Get(chosenUUID, &m_CurMediaServer);
+	    deviceMediaServerMap.Get(chosenUUID, tmpMediaServer);
+		m_CurMediaServer = *tmpMediaServer;
 		return 0;
-	}*/
+	}
 
 	return -1;
 }
+
+int PLT_MicroMediaController::setActiveDmr(NPT_String chosenUUID)
+{
+	NPT_AutoLock lock(m_CurMediaServerLock);
+
+    PopDirectoryStackToRoot();
+
+	PLT_DeviceDataReference *tmpMediaRender;
+
+	if (chosenUUID.GetLength()) {
+	    m_MediaRenderers.Get(chosenUUID, tmpMediaRender);
+		m_CurMediaRenderer = *tmpMediaRender;
+		return 0;
+	}
+
+	return -1;
+}
+
+char* PLT_MicroMediaController::getActiveDms()
+{
+    PLT_DeviceDataReference device;
+    GetCurMediaServer(device);
+	return (char*)device->GetUUID();
+}
+
+char* PLT_MicroMediaController::getActiveDmr()
+{
+	PLT_DeviceDataReference device;
+	GetCurMediaRenderer(device);
+	return (char*)device->GetUUID();
+}
+
+void PLT_MicroMediaController::lsFiles()
+{
+	NPT_LOG_INFO("lsFiles\n");
+
+    DoBrowse();
+
+    if (!m_MostRecentBrowseResults.IsNull()) {
+        NPT_LOG_INFO_1("There were %d results\n", m_MostRecentBrowseResults->GetItemCount());
+
+        NPT_List<PLT_MediaObject*>::Iterator item = m_MostRecentBrowseResults->GetFirstItem();
+        while (item) {
+            if ((*item)->IsContainer()) {
+                NPT_LOG_INFO_2("Container: %s (%s)\n", (*item)->m_Title.GetChars(), (*item)->m_ObjectID.GetChars());
+            } else {
+                NPT_LOG_INFO_2("Item: %s (%s)\n", (*item)->m_Title.GetChars(), (*item)->m_ObjectID.GetChars());
+            }
+            ++item;
+        }
+
+        m_MostRecentBrowseResults = NULL;
+    }
+}
+
 
 
 /*----------------------------------------------------------------------

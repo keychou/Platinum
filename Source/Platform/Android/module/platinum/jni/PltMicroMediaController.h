@@ -129,6 +129,10 @@ public:
 
 	void    GetDms();
 	int setActiveDms(NPT_String chosenUUID);
+	int setActiveDmr(NPT_String chosenUUID);
+	char* getActiveDms();
+	char* getActiveDmr();
+	void lsFiles();
 
 private:
     /* Tables of known devices on the network.  These are updated via the
