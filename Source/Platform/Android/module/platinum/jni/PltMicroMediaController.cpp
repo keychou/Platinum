@@ -176,7 +176,7 @@ PLT_MicroMediaController::OnMSAdded(PLT_DeviceDataReference& device)
 
     NPT_LOG_INFO("OnMSAdded");
 
-	callBack_AddDms((device->GetUUID()).GetChars(), (device->GetFriendlyName()).GetChars(), (device->GetType()).GetChars());
+	//callBack_AddDms((device->GetUUID()).GetChars(), (device->GetFriendlyName()).GetChars(), (device->GetType()).GetChars());
 
     // Issue special action upon discovering MediaConnect server
     PLT_Service* service;
@@ -213,7 +213,7 @@ bool
 PLT_MicroMediaController::OnMRAdded(PLT_DeviceDataReference& device)
 {
 	NPT_LOG_INFO("OnMRAdded");
-	callBack_AddDmr((device->GetUUID()).GetChars(), (device->GetFriendlyName()).GetChars(), (device->GetType()).GetChars());
+	//callBack_AddDmr((device->GetUUID()).GetChars(), (device->GetFriendlyName()).GetChars(), (device->GetType()).GetChars());
 
     NPT_String uuid = device->GetUUID();
 
@@ -233,7 +233,7 @@ PLT_MicroMediaController::OnMRAdded(PLT_DeviceDataReference& device)
 void
 PLT_MicroMediaController::OnMRRemoved(PLT_DeviceDataReference& device)
 {
-    NPT_LOG_INFO("OnMRRemoved");
+    NPT_LOG_INFO("klein------------OnMRRemoved");
     NPT_String uuid = device->GetUUID();
 
     {
@@ -258,6 +258,8 @@ void
 PLT_MicroMediaController::OnMRStateVariablesChanged(PLT_Service*                  service,
                                                     NPT_List<PLT_StateVariable*>* vars)
 {
+
+	NPT_LOG_INFO("klein------------OnMRStateVariablesChanged");
     NPT_String uuid = service->GetDevice()->GetUUID();
     NPT_List<PLT_StateVariable*>::Iterator var = vars->GetFirstItem();
     while (var) {

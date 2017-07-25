@@ -38,6 +38,8 @@
 #include "Neptune.h"
 #include "PltMediaBrowser.h"
 #include "PltDidl.h"
+#include "platinum-jni.h"
+
 
 NPT_SET_LOCAL_LOGGER("platinum.media.server.browser")
 
@@ -114,6 +116,7 @@ PLT_MediaBrowser::OnDeviceAdded(PLT_DeviceDataReference& device)
         NPT_LOG_FINE_1("PLT_MediaBrowser --- Device Found: %s", (const char*)*device);
 
         m_MediaServers.Add(device);
+		callBack_AddDms((device->GetUUID()).GetChars(), (device->GetFriendlyName()).GetChars(), (device->GetType()).GetChars());
     }
 
 
@@ -150,6 +153,7 @@ PLT_MediaBrowser::OnDeviceRemoved(PLT_DeviceDataReference& device)
         NPT_LOG_FINE_1("Device Removed: %s", (const char*)*device);
 
         m_MediaServers.Remove(device);
+		callBack_RemovedDms((device->GetUUID()).GetChars(), (device->GetFriendlyName()).GetChars(), (device->GetType()).GetChars());
     }
     
     if (m_Delegate) {

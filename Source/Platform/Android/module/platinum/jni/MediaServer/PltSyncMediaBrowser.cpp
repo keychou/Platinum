@@ -108,6 +108,8 @@ PLT_SyncMediaBrowser::OnDeviceRemoved(PLT_DeviceDataReference& device)
         m_MediaServers.Erase(uuid);
     }
 
+	//callBack_RemovedDms((device->GetUUID()).GetChars(), (device->GetFriendlyName()).GetChars(), (device->GetType()).GetChars());
+
     // clear cache for that device
     if (m_UseCache) m_Cache.Clear(device.AsPointer()->GetUUID());
     

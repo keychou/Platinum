@@ -79,6 +79,37 @@ int callBack_AddDms(const char* uuid, const char* friendName, const char* device
     return 1;
 }
 
+int callBack_RemovedDms(const char* uuid, const char* friendName, const char* deviceType) {
+
+    NPT_LOG_INFO("callBack_RemovedDms");
+
+    int status;
+    JNIEnv *env;
+    bool isAttached = false;
+    status = vmGlobal->GetEnv((void**) &env, JNI_VERSION_1_4);
+    if (status < 0) {
+        status = vmGlobal->AttachCurrentThread(&env, NULL);
+        if (status < 0){
+
+        }else{
+            isAttached = true;
+        }
+    }
+
+    jstring luuid = env->NewStringUTF(uuid);
+	jstring lfriendName = env->NewStringUTF(friendName);
+	jstring ldeviceType = env->NewStringUTF(deviceType);
+
+    env->CallVoidMethod(objGlobal, gNativeUpnpClassInfo.onDmsRemoved,luuid,lfriendName,ldeviceType);
+
+    if (isAttached){
+        vmGlobal->DetachCurrentThread();
+    }
+
+    return 1;
+}
+
+
 
 int callBack_AddDmr(const char* uuid, const char* friendName, const char* deviceType) {
 
@@ -109,6 +140,37 @@ int callBack_AddDmr(const char* uuid, const char* friendName, const char* device
 
     return 1;
 }
+
+int callBack_RemovedDmr(const char* uuid, const char* friendName, const char* deviceType) {
+
+    NPT_LOG_INFO("callBack_RemovedDmr");
+
+    int status;
+    JNIEnv *env;
+    bool isAttached = false;
+    status = vmGlobal->GetEnv((void**) &env, JNI_VERSION_1_4);
+    if (status < 0) {
+        status = vmGlobal->AttachCurrentThread(&env, NULL);
+        if (status < 0){
+
+        }else{
+            isAttached = true;
+        }
+    }
+
+    jstring luuid = env->NewStringUTF(uuid);
+	jstring lfriendName = env->NewStringUTF(friendName);
+	jstring ldeviceType = env->NewStringUTF(deviceType);
+
+    env->CallVoidMethod(objGlobal, gNativeUpnpClassInfo.onDmrRemoved,luuid,lfriendName,ldeviceType);
+
+    if (isAttached){
+        vmGlobal->DetachCurrentThread();
+    }
+
+    return 1;
+}
+
 
 
 
@@ -206,10 +268,10 @@ int register_NativeUpnp(JNIEnv *env)
                   "onDmsAdded", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");
     CHECK_IF_VALIABLE(gNativeUpnpClassInfo.onDmsAdded);
 
-    /*GET_METHOD_ID(gNativeUpnpClassInfo.onDmsRemoved,
+    GET_METHOD_ID(gNativeUpnpClassInfo.onDmsRemoved,
             clazz,
-            "onDmsRemoved", "(Ljava/lang/String;)V");
-    CHECK_IF_VALIABLE(gNativeUpnpClassInfo.onDmsRemoved);*/
+            "onDmsRemoved", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");
+    CHECK_IF_VALIABLE(gNativeUpnpClassInfo.onDmsRemoved);
 
 	
     GET_METHOD_ID(gNativeUpnpClassInfo.onDmrAdded,
@@ -217,10 +279,10 @@ int register_NativeUpnp(JNIEnv *env)
             "onDmrAdded", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");
 	CHECK_IF_VALIABLE(gNativeUpnpClassInfo.onDmrAdded);
 	
-    /*GET_METHOD_ID(gNativeUpnpClassInfo.onDmrRemoved,
+    GET_METHOD_ID(gNativeUpnpClassInfo.onDmrRemoved,
             clazz,
-            "onDmrRemoved", "(Ljava/lang/String;)V");
-	CHECK_IF_VALIABLE(gNativeUpnpClassInfo.onDmrRemoved);*/
+            "onDmrRemoved", "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V");
+	CHECK_IF_VALIABLE(gNativeUpnpClassInfo.onDmrRemoved);
     return 0;
 }
 

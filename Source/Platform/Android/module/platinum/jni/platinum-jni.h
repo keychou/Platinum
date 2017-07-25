@@ -27,6 +27,9 @@ static struct {
 int register_NativeUpnp(JNIEnv *env);
 int callBack_AddDms(const char* uuid, const char* friendName, const char* deviceType);
 int callBack_AddDmr(const char* uuid, const char* friendName, const char* deviceType);
+int callBack_RemovedDms(const char* uuid, const char* friendName, const char* deviceType);
+int callBack_RemovedDmr(const char* uuid, const char* friendName, const char* deviceType);
+
 
 
 

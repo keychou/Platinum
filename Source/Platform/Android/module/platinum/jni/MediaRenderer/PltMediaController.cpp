@@ -40,6 +40,8 @@
 #include "PltDidl.h"
 #include "PltDeviceData.h"
 #include "PltUtilities.h"
+#include "platinum-jni.h"
+
 
 NPT_SET_LOCAL_LOGGER("platinum.media.renderer.controller")
 
@@ -123,6 +125,7 @@ PLT_MediaController::OnDeviceAdded(PLT_DeviceDataReference& device)
         NPT_LOG_FINE_1("PLT_MediaController --- Device Found: %s", (const char*)*device);
 
         m_MediaRenderers.Add(device);
+		callBack_AddDmr((device->GetUUID()).GetChars(), (device->GetFriendlyName()).GetChars(), (device->GetType()).GetChars());
     }
     
     if (m_Delegate && m_Delegate->OnMRAdded(device)) {
@@ -162,6 +165,7 @@ PLT_MediaController::OnDeviceRemoved(PLT_DeviceDataReference& device)
         NPT_LOG_FINE_1("Device Removed: %s", (const char*)*device);
 
         m_MediaRenderers.Remove(device);
+		callBack_RemovedDmr((device->GetUUID()).GetChars(), (device->GetFriendlyName()).GetChars(), (device->GetType()).GetChars());
     }
 
     if (m_Delegate) {
