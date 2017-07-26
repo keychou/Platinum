@@ -19,6 +19,7 @@
 #include "Platinum.h"
 #include "PltMicroMediaController.h"
 #include "PltLog.h"
+#include "PltMediaItem.h"
 
 #include <android/log.h>
 
@@ -272,16 +273,71 @@ jstring platinum_UPnP_getActiveDmr(JNIEnv *env, jobject obj)
     return env->NewStringUTF(activeDmr);
 }
 
-jstring platinum_UPnP_lsFiles(JNIEnv *env, jobject obj)
+jobjectArray platinum_UPnP_lsFiles(JNIEnv *env, jobject obj)
 {
     NPT_LOG_INFO("platinum_UPnP_lsFiles");
 
-	controller->lsFiles();
+	jobjectArray mediaObjectArray = NULL;
+    jclass cl = NULL;
+    jobject mediaobj;  
 
-    return env->NewStringUTF("hello");
+    cl = env->FindClass("com/plutinosoft/platinum/MediaObject");
+    jfieldID Objecttype = (env)->GetFieldID(cl, "m_Objecttype", "Ljava/lang/String;");  
+    jfieldID ObjectID = (env)->GetFieldID(cl, "m_ObjectID", "Ljava/lang/String;");
+	jfieldID ParentID = (env)->GetFieldID(cl, "m_ParentID", "Ljava/lang/String;");
+	jfieldID Title = (env)->GetFieldID(cl, "m_Title", "Ljava/lang/String;");
+
+    jmethodID consID = (env)->GetMethodID(cl, "<init>", "()V");
+
+	NPT_Reference<PLT_MediaObjectList> mediaObjectList = controller->lsFiles();
+	
+		if (!mediaObjectList.IsNull()) {
+			    jint len = mediaObjectList->GetItemCount();
+				mediaObjectArray = env->NewObjectArray(len, cl, NULL);
+				NPT_LOG_INFO_1("klein------There were %d results\n", len);
+		
+				NPT_List<PLT_MediaObject*>::Iterator item = mediaObjectList->GetFirstItem();
+				int i = 0;
+				while (item) {
+					if ((*item)->IsContainer()) {
+						NPT_LOG_INFO_2("Container: %s (%s)\n", (*item)->m_Title.GetChars(), (*item)->m_ObjectID.GetChars());
+						mediaobj = env->NewObject(cl, consID);
+								
+						env->SetObjectField(mediaobj, Objecttype, env->NewStringUTF("object.container"));
+						env->SetObjectField(mediaobj, ObjectID, env->NewStringUTF((*item)->m_ObjectID.GetChars())); 
+						env->SetObjectField(mediaobj, ParentID, env->NewStringUTF((*item)->m_ParentID.GetChars())); 
+						env->SetObjectField(mediaobj, Title, env->NewStringUTF((*item)->m_Title.GetChars()));
+						env->SetObjectArrayElement(mediaObjectArray, i, mediaobj);
+
+						
+					} else {
+						NPT_LOG_INFO_2("Item: %s (%s)\n", (*item)->m_Title.GetChars(), (*item)->m_ObjectID.GetChars());
+						mediaobj = env->NewObject(cl, consID);
+								
+						env->SetObjectField(mediaobj, Objecttype, env->NewStringUTF("object.item"));
+						env->SetObjectField(mediaobj, ObjectID, env->NewStringUTF((*item)->m_ObjectID.GetChars())); 
+						env->SetObjectField(mediaobj, ParentID, env->NewStringUTF((*item)->m_ParentID.GetChars())); 
+						env->SetObjectField(mediaobj, Title, env->NewStringUTF((*item)->m_Title.GetChars()));
+						env->SetObjectArrayElement(mediaObjectArray, i, mediaobj);
+					}
+					++item;
+					++i;
+				}
+		
+				mediaObjectList = NULL;
+			}
+		
+    return mediaObjectArray;
 }
 
-
+jint platinum_UPnP_changeDirectory(JNIEnv *env, jclass, jstring objectId)
+{
+    NPT_LOG_INFO("platinum_UPnP_changeDirectory");
+	const char* lobjectid = env->GetStringUTFChars(objectId, 0);
+	
+    controller->changeDirectory(lobjectid);
+    return 0;
+}
 
 
 
@@ -294,7 +350,8 @@ static JNINativeMethod method_table[] = {
         {"_setActiveDmr",  "(Ljava/lang/String;)I",  (void *)platinum_UPnP_setActiveDmr},
         {"_getActiveDms",  "()Ljava/lang/String;",  (void *)platinum_UPnP_getActiveDms},
         {"_getActiveDmr",  "()Ljava/lang/String;",  (void *)platinum_UPnP_getActiveDmr},
-        {"_lsFiles",  "()Ljava/lang/String;",  (void *)platinum_UPnP_lsFiles},
+        {"_lsFiles",  "()[Lcom/plutinosoft/platinum/MediaObject;",  (void *)platinum_UPnP_lsFiles},
+        {"_changeDirectory",  "(Ljava/lang/String;)I",  (void *)platinum_UPnP_changeDirectory},
 };
 
 int register_NativeUpnp(JNIEnv *env)

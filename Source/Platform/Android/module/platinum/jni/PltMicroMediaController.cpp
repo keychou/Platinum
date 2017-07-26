@@ -429,11 +429,12 @@ char* PLT_MicroMediaController::getActiveDmr()
 	return (char*)device->GetUUID();
 }
 
-void PLT_MicroMediaController::lsFiles()
+PLT_MediaObjectListReference PLT_MicroMediaController::lsFiles()
 {
 	NPT_LOG_INFO("lsFiles\n");
 
     DoBrowse();
+
 
     if (!m_MostRecentBrowseResults.IsNull()) {
         NPT_LOG_INFO_1("There were %d results\n", m_MostRecentBrowseResults->GetItemCount());
@@ -448,8 +449,17 @@ void PLT_MicroMediaController::lsFiles()
             ++item;
         }
 
-        m_MostRecentBrowseResults = NULL;
+        //m_MostRecentBrowseResults = NULL;
     }
+	return m_MostRecentBrowseResults;
+}
+
+
+void PLT_MicroMediaController::changeDirectory(NPT_String objectID){
+	if (objectID.GetLength()) {
+		m_CurBrowseDirectoryStack.Push(objectID);
+	}
+
 }
 
 

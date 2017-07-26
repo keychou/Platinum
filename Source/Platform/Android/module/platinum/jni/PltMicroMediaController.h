@@ -132,7 +132,8 @@ public:
 	int setActiveDmr(NPT_String chosenUUID);
 	char* getActiveDms();
 	char* getActiveDmr();
-	void lsFiles();
+	PLT_MediaObjectListReference lsFiles();
+	void changeDirectory(NPT_String objectID);
 
 private:
     /* Tables of known devices on the network.  These are updated via the
