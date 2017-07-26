@@ -272,6 +272,16 @@ jstring platinum_UPnP_getActiveDmr(JNIEnv *env, jobject obj)
     return env->NewStringUTF(activeDmr);
 }
 
+jstring platinum_UPnP_lsFiles(JNIEnv *env, jobject obj)
+{
+    NPT_LOG_INFO("platinum_UPnP_lsFiles");
+
+	controller->lsFiles();
+
+    return env->NewStringUTF("hello");
+}
+
+
 
 
 
@@ -284,6 +294,7 @@ static JNINativeMethod method_table[] = {
         {"_setActiveDmr",  "(Ljava/lang/String;)I",  (void *)platinum_UPnP_setActiveDmr},
         {"_getActiveDms",  "()Ljava/lang/String;",  (void *)platinum_UPnP_getActiveDms},
         {"_getActiveDmr",  "()Ljava/lang/String;",  (void *)platinum_UPnP_getActiveDmr},
+        {"_lsFiles",  "()Ljava/lang/String;",  (void *)platinum_UPnP_lsFiles},
 };
 
 int register_NativeUpnp(JNIEnv *env)
