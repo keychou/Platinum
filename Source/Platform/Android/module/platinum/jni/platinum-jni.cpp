@@ -249,6 +249,10 @@ jint platinum_UPnP_setActiveDms(JNIEnv *env, jclass, jstring uuid)
 jint platinum_UPnP_setActiveDmr(JNIEnv *env, jclass, jstring uuid)
 {
     NPT_LOG_INFO("setActiveDmr");
+	if (uuid == NULL){
+		NPT_LOG_INFO("uuid is null");
+        return -1;
+	}
 	const char* luuid = env->GetStringUTFChars(uuid, 0);
 	
     controller->setActiveDmr(luuid);
@@ -339,6 +343,16 @@ jint platinum_UPnP_changeDirectory(JNIEnv *env, jclass, jstring objectId)
     return 0;
 }
 
+jint platinum_UPnP_play(JNIEnv *env, jclass, jstring objectId)
+{
+    NPT_LOG_INFO("platinum_UPnP_play");
+	const char* lobjectid = env->GetStringUTFChars(objectId, 0);
+	
+    controller->playFiles(lobjectid);
+    return 0;
+}
+
+
 
 
 static JNINativeMethod method_table[] = {
@@ -352,6 +366,7 @@ static JNINativeMethod method_table[] = {
         {"_getActiveDmr",  "()Ljava/lang/String;",  (void *)platinum_UPnP_getActiveDmr},
         {"_lsFiles",  "()[Lcom/plutinosoft/platinum/MediaObject;",  (void *)platinum_UPnP_lsFiles},
         {"_changeDirectory",  "(Ljava/lang/String;)I",  (void *)platinum_UPnP_changeDirectory},
+        {"_play",  "(Ljava/lang/String;)I",  (void *)platinum_UPnP_play},
 };
 
 int register_NativeUpnp(JNIEnv *env)

@@ -134,6 +134,7 @@ public:
 	char* getActiveDmr();
 	PLT_MediaObjectListReference lsFiles();
 	void changeDirectory(NPT_String objectID);
+	void playFiles(NPT_String objectID);
 
 private:
     /* Tables of known devices on the network.  These are updated via the

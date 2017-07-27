@@ -462,6 +462,49 @@ void PLT_MicroMediaController::changeDirectory(NPT_String objectID){
 
 }
 
+void PLT_MicroMediaController::playFiles(NPT_String objectID){
+
+	NPT_LOG_INFO("klein --------- playFiles\n");
+
+	 PLT_DeviceDataReference device;
+	
+	 GetCurMediaRenderer(device);
+	 
+	 if (!device.IsNull()) {
+		 if (objectID.GetLength()) {
+							 // look back for the PLT_MediaItem in the results
+			PLT_MediaObject* track = NULL;
+			 if (NPT_SUCCEEDED(NPT_ContainerFind(*m_MostRecentBrowseResults, PLT_MediaItemIDFinder(objectID), track))) {
+				if (track->m_Resources.GetItemCount() > 0) {
+						// look for best resource to use by matching each resource to a sink advertised by renderer
+						NPT_Cardinal resource_index = 0;
+						if (NPT_FAILED(FindBestResource(device, *track, resource_index))) {
+										 NPT_LOG_INFO("No matching resource\n");
+										 return;
+									 }
+			 
+									 // invoke the setUri
+									 NPT_LOG_INFO_2("Issuing SetAVTransportURI with url=%s & didl=%s", 
+										 (const char*)track->m_Resources[resource_index].m_Uri, 
+										 (const char*)track->m_Didl);
+									 SetAVTransportURI(device, 0, track->m_Resources[resource_index].m_Uri, track->m_Didl, NULL);
+								 } else {
+									 NPT_LOG_INFO("Couldn't find the proper resource\n");
+								 }
+			 
+							 } else {
+								 NPT_LOG_INFO("Couldn't find the track\n");
+							 }
+						 }
+
+		 Play(device, 0, "1", NULL);
+
+	 }
+
+	 
+}
+
+
 
 
 /*----------------------------------------------------------------------
