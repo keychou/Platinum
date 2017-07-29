@@ -462,6 +462,19 @@ void PLT_MicroMediaController::changeDirectory(NPT_String objectID){
 
 }
 
+void PLT_MicroMediaController::cdup()
+{
+    // we don't want to pop the root off now....
+    NPT_String val;
+    m_CurBrowseDirectoryStack.Peek(val);
+    if (val.Compare("0")) {
+        m_CurBrowseDirectoryStack.Pop(val);
+    } else {
+        NPT_LOG_INFO("Already at root\n");
+    }
+}
+
+
 void PLT_MicroMediaController::playFiles(NPT_String objectID){
 
 	NPT_LOG_INFO("klein --------- playFiles\n");
@@ -478,10 +491,10 @@ void PLT_MicroMediaController::playFiles(NPT_String objectID){
 				if (track->m_Resources.GetItemCount() > 0) {
 						// look for best resource to use by matching each resource to a sink advertised by renderer
 						NPT_Cardinal resource_index = 0;
-						if (NPT_FAILED(FindBestResource(device, *track, resource_index))) {
-										 NPT_LOG_INFO("No matching resource\n");
-										 return;
-									 }
+						//if (NPT_FAILED(FindBestResource(device, *track, resource_index))) {
+						//				 NPT_LOG_INFO("No matching resource\n");
+						//				 return;
+						//			 }
 			 
 									 // invoke the setUri
 									 NPT_LOG_INFO_2("Issuing SetAVTransportURI with url=%s & didl=%s", 
@@ -503,6 +516,25 @@ void PLT_MicroMediaController::playFiles(NPT_String objectID){
 
 	 
 }
+
+
+void PLT_MicroMediaController::seek(const char* command)
+{
+    PLT_DeviceDataReference device;
+    GetCurMediaRenderer(device);
+    if (!device.IsNull()) {
+        // remove first part of command ("seek")
+        NPT_String target = command;
+        NPT_List<NPT_String> args = target.Split(" ");
+        if (args.GetItemCount() < 2) return;
+
+        args.Erase(args.GetFirstItem());
+        target = NPT_String::Join(args, " ");
+        
+        Seek(device, 0, (target.Find(":")!=-1)?"REL_TIME":"X_DLNA_REL_BYTE", target, NULL);
+    }
+}
+
 
 
 

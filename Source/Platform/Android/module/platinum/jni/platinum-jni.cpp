@@ -343,6 +343,14 @@ jint platinum_UPnP_changeDirectory(JNIEnv *env, jclass, jstring objectId)
     return 0;
 }
 
+jint platinum_UPnP_cdup(JNIEnv *env, jclass)
+{
+    NPT_LOG_INFO("platinum_UPnP_cdup");
+    controller->cdup();
+    return 0;
+}
+
+
 jint platinum_UPnP_play(JNIEnv *env, jclass, jstring objectId)
 {
     NPT_LOG_INFO("platinum_UPnP_play");
@@ -367,6 +375,7 @@ static JNINativeMethod method_table[] = {
         {"_lsFiles",  "()[Lcom/plutinosoft/platinum/MediaObject;",  (void *)platinum_UPnP_lsFiles},
         {"_changeDirectory",  "(Ljava/lang/String;)I",  (void *)platinum_UPnP_changeDirectory},
         {"_play",  "(Ljava/lang/String;)I",  (void *)platinum_UPnP_play},
+        {"_cdup",  "()I",  (void *)platinum_UPnP_cdup},
 };
 
 int register_NativeUpnp(JNIEnv *env)
