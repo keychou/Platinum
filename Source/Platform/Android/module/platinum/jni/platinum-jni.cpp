@@ -23,7 +23,7 @@
 
 #include <android/log.h>
 
-#define VERSION_OF_PLATITUM_SDK "1.0.2"
+#define VERSION_OF_PLATITUM_SDK "1.0.5"
 
 /*----------------------------------------------------------------------
 |   logging
