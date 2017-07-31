@@ -31,9 +31,6 @@ int callBack_RemovedDms(const char* uuid, const char* friendName, const char* de
 int callBack_RemovedDmr(const char* uuid, const char* friendName, const char* deviceType);
 
 
-
-
-
 #ifdef __cplusplus
 }
 #endif

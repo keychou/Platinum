@@ -525,15 +525,40 @@ void PLT_MicroMediaController::seek(const char* command)
     if (!device.IsNull()) {
         // remove first part of command ("seek")
         NPT_String target = command;
-        NPT_List<NPT_String> args = target.Split(" ");
-        if (args.GetItemCount() < 2) return;
-
-        args.Erase(args.GetFirstItem());
-        target = NPT_String::Join(args, " ");
         
         Seek(device, 0, (target.Find(":")!=-1)?"REL_TIME":"X_DLNA_REL_BYTE", target, NULL);
     }
 }
+
+void PLT_MicroMediaController::stop()
+{
+    PLT_DeviceDataReference device;
+    GetCurMediaRenderer(device);
+    if (!device.IsNull()) {
+        Stop(device, 0, NULL);
+    }
+}
+
+void PLT_MicroMediaController::mute()
+{
+    PLT_DeviceDataReference device;
+    GetCurMediaRenderer(device);
+    if (!device.IsNull()) {
+        SetMute(device, 0, "Master", true, NULL);
+    }
+}
+
+void PLT_MicroMediaController::unmute()
+{
+    PLT_DeviceDataReference device;
+    GetCurMediaRenderer(device);
+    if (!device.IsNull()) {
+        SetMute(device, 0, "Master", false, NULL);
+    }
+}
+
+
+
 
 
 

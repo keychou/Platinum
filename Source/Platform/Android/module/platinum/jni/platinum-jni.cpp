@@ -360,6 +360,38 @@ jint platinum_UPnP_play(JNIEnv *env, jclass, jstring objectId)
     return 0;
 }
 
+jint platinum_UPnP_seek(JNIEnv *env, jclass, jstring realtime)
+{
+    NPT_LOG_INFO("platinum_UPnP_seek");
+	const char* lrealtime = env->GetStringUTFChars(realtime, 0);
+	
+    controller->seek(lrealtime);
+    return 0;
+}
+
+jint platinum_UPnP_mediastop(JNIEnv *env, jclass)
+{
+    NPT_LOG_INFO("platinum_UPnP_mediastop");
+
+    controller->stop();
+    return 0;
+}
+
+jint platinum_UPnP_mute(JNIEnv *env, jclass)
+{
+    NPT_LOG_INFO("platinum_UPnP_mute");
+
+    controller->mute();
+    return 0;
+}
+
+jint platinum_UPnP_unmute(JNIEnv *env, jclass)
+{
+    NPT_LOG_INFO("platinum_UPnP_unmute");
+
+    controller->unmute();
+    return 0;
+}
 
 
 
@@ -376,6 +408,10 @@ static JNINativeMethod method_table[] = {
         {"_changeDirectory",  "(Ljava/lang/String;)I",  (void *)platinum_UPnP_changeDirectory},
         {"_play",  "(Ljava/lang/String;)I",  (void *)platinum_UPnP_play},
         {"_cdup",  "()I",  (void *)platinum_UPnP_cdup},
+        {"_seek",  "(Ljava/lang/String;)I",  (void *)platinum_UPnP_seek},
+        {"_mediastop",  "()I",  (void *)platinum_UPnP_mediastop},
+        {"_mute",  "()I",  (void *)platinum_UPnP_mute},
+        {"_unmute",  "()I",  (void *)platinum_UPnP_unmute},
 };
 
 int register_NativeUpnp(JNIEnv *env)

@@ -136,7 +136,11 @@ public:
 	void changeDirectory(NPT_String objectID);
 	void playFiles(NPT_String objectID);
 	void cdup();
-	void seek(const char* command)
+	void seek(const char* command);
+	void stop();
+	void mute();
+	void unmute();
+	
 
 private:
     /* Tables of known devices on the network.  These are updated via the
