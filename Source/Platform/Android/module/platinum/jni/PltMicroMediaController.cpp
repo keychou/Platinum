@@ -436,7 +436,7 @@ PLT_MediaObjectListReference PLT_MicroMediaController::lsFiles()
     DoBrowse();
 
 
-    if (!m_MostRecentBrowseResults.IsNull()) {
+    if ((!m_MostRecentBrowseResults.IsNull()) && (m_MostRecentBrowseResults->GetItemCount() > 0)) {
         NPT_LOG_INFO_1("There were %d results\n", m_MostRecentBrowseResults->GetItemCount());
 
         NPT_List<PLT_MediaObject*>::Iterator item = m_MostRecentBrowseResults->GetFirstItem();
@@ -449,8 +449,9 @@ PLT_MediaObjectListReference PLT_MicroMediaController::lsFiles()
             ++item;
         }
 
-        //m_MostRecentBrowseResults = NULL;
-    }
+    } else {
+        m_MostRecentBrowseResults = NULL;
+	}
 	return m_MostRecentBrowseResults;
 }
 
@@ -467,11 +468,12 @@ void PLT_MicroMediaController::cdup()
     // we don't want to pop the root off now....
     NPT_String val;
     m_CurBrowseDirectoryStack.Peek(val);
-    if (val.Compare("0")) {
-        m_CurBrowseDirectoryStack.Pop(val);
-    } else {
-        NPT_LOG_INFO("Already at root\n");
-    }
+	while (val.Compare("0")){
+		m_CurBrowseDirectoryStack.Pop(val);
+		m_CurBrowseDirectoryStack.Peek(val);
+	}
+
+    NPT_LOG_INFO("Already at root\n");
 }
 
 
